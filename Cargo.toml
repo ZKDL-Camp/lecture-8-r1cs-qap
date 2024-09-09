@@ -1,0 +1,14 @@
+[package]
+name = "lecture-8-r1cs-qap"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# The `ark-ff` crate provides finite field arithmetic on the BLS12-381 curve
+# which we are using in this example.
+ark-ff          = { version = "0.4" }
+ark-test-curves = { version = "0.4.2", features = ["bls12_381_curve"] }
+
+# Just for pretty debugging
+colored = "2.1.0"
+rand = "0.8.5"
