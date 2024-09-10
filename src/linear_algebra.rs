@@ -24,14 +24,14 @@ impl<const N: usize> Vector<N> {
     }
 
     /// Implements the dot product of two vectors
-    pub fn dot(&self, other: &Vector<N>) -> Fp {
+    pub fn dot(&self, other: &Self) -> Fp {
         // TODO: Implement dot product here!
         unimplemented!("Implement dot product!")
     }
 
     /// Implements the element-wise product of two vectors
     /// (called the Hadamard product)
-    pub fn hadamard_product(&self, other: &Vector<N>) -> Vector<N> {
+    pub fn hadamard_product(&self, other: &Self) -> Self {
         // TODO: Implement hadamard product here!
         unimplemented!("Implement hadamard product!")
     }
