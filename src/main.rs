@@ -15,7 +15,11 @@ use rand::Rng;
 /// the following R1CS:
 ///
 /// - `r1 == x * x`
-/// - `r2 == r1 * x - y`
+/// - `r2 == x * r1 - y`
+///
+/// convert to conveniently
+/// - `r1 == x * x`
+/// - `r2 + y = x * r1`
 ///
 /// So our witness consists of values (1, x, y, r1, r2) and we enforce two constraints.
 ///
@@ -37,27 +41,28 @@ fn generate_random_witness() -> Vector<5> {
 
 /// Main function to test the R1CS. It creates a cube root R1CS and checks if a random witness
 /// satisfies the R1CS.
-#[allow(unreachable_code, unused_variables)] // To remove the warnings, remove this line after implementing the functions
 fn main() {
     println!("{}", "Creating R1CS...".bright_black());
 
     let zero = Fp::from(0);
     let one = Fp::from(1);
 
-    // NOTE: You might assume that the left matrix is already 
+    // NOTE: You might assume that the left matrix is already
     // correctly(!) implemented for you.
     let left_matrix: Matrix<5, 2> = Matrix::new([
         Vector::new([zero, one, zero, zero, zero]),
         Vector::new([zero, one, zero, zero, zero]),
     ]);
     // TODO: Implement right matrix here!
-    let right_matrix: Matrix<5, 2> = {
-        unimplemented!("Implement right matrix here!")
-    };
+    let right_matrix: Matrix<5, 2> = Matrix::new([
+        Vector::new([zero, one, zero, zero, zero]),
+        Vector::new([zero, zero, zero, one, zero]),
+    ]);
     // TODO: Implement output matrix here!
-    let output_matrix: Matrix<5, 2> = {
-        unimplemented!("Implement right matrix here!")
-    };
+    let output_matrix: Matrix<5, 2> = Matrix::new([
+        Vector::new([zero, zero, zero, one, zero]),
+        Vector::new([zero, zero, one, zero, one]),
+    ]);
 
     let cube_root_r1cs = R1CS::new(left_matrix, right_matrix, output_matrix);
     println!("{}", "R1CS Created Successfully!".bright_black());
@@ -80,7 +85,7 @@ fn main() {
                 .bold()
         );
         return;
-    } 
+    }
 
     println!(
         "{}",

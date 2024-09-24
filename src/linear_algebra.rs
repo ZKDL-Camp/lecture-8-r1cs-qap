@@ -25,15 +25,23 @@ impl<const N: usize> Vector<N> {
 
     /// Implements the dot product of two vectors
     pub fn dot(&self, other: &Self) -> Fp {
-        // TODO: Implement dot product here!
-        unimplemented!("Implement dot product!")
+        let mut res = Fp::from(0);
+        for i in 0..N {
+            res += self.get(i) * other.get(i);
+        }
+        res
     }
 
-    /// Implements the element-wise product of two vectors
-    /// (called the Hadamard product)
+    // Maybe it's incorrect
     pub fn hadamard_product(&self, other: &Self) -> Self {
+        let mut res = Vector::new([Fp::from(0); N]);
+        for i in 0..N {
+            res.0[i] = self.get(i) * other.get(i);
+        }
+        res
+
         // TODO: Implement hadamard product here!
-        unimplemented!("Implement hadamard product!")
+        // unimplemented!("Implement hadamard product!")
     }
 }
 
@@ -85,17 +93,25 @@ impl<const N: usize, const M: usize> Matrix<N, M> {
     /// consisting of elements `a_ij` and `b_ij` respectively, the hadamard product is a matrix `C`
     /// consisting of elements `c_ij = a_ij * b_ij`.
     pub fn hadamard_product(&self, other: &Self) -> Self {
+        let mut res = Matrix::zero();
+        for i in 0..M {
+            res.0[i] = self.row(i).hadamard_product(other.row(i));
+        }
+        res
         // TODO: Implement hadamard product here!
-        unimplemented!("Implement hadamard product!")
+        //unimplemented!("Implement hadamard product!")
     }
 
     /// Implements the matrix-vector product. Namely, given a matrix `A` and a vector `b`, the
-    /// matrix-vector product gives `Ab`. 
-    /// 
+    /// matrix-vector product gives `Ab`.
+    ///
     /// **Hint:** this is a vector `c` such that `c_i = \sum_j a_ij * b_j`.
     pub fn vector_product(&self, other: &Vector<N>) -> Vector<M> {
-        // TODO: Implement matrix-vector product here!
-        unimplemented!("Implement matrix-vector product!")
+        let mut res = Vector::new([Fp::from(0); M]);
+        for i in 0..M {
+            res.0[i] = self.row(i).dot(other);
+        }
+        res
     }
 }
 
