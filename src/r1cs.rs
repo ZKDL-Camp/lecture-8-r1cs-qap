@@ -1,11 +1,14 @@
 //! This module contains the implementation of Rank-1 Constraint System (R1CS).
 //! It consists of three matrices: left, right, and output, each of which is a vector of vectors.
-//! The R1CS is satisfied if the Hadamard product of left and right matrices times solution witness 
+//! The R1CS is satisfied if the Hadamard product of left and right matrices times solution witness
 //! is equal to the output matrix times solution witness.
-//! 
+//!
 //! Here, you need to implement the function checking whether the R1CS is satisfied by the witness.
 
-use crate::{finite_field::Fp, linear_algebra::{Matrix, Vector}};
+use crate::{
+    finite_field::Fp,
+    linear_algebra::{Matrix, Vector},
+};
 
 /// Structure representing general R1CS. It consists of three matrices:
 /// left, right, and output, each of which is a vector of vectors
@@ -31,24 +34,43 @@ impl<const WITNESS_SIZE: usize, const CONSTRAINT_NUM: usize> R1CS<WITNESS_SIZE, 
 
     /// Checks whether specified witness satisfies the R1CS
     pub fn is_satisfied(&self, witness: &Vector<WITNESS_SIZE>) -> bool {
-        assert_eq!(witness.get(0), Fp::from(1), "first element of witness must be 1!");
+        assert_eq!(
+            witness.get(0),
+            Fp::from(1),
+            "first element of witness must be 1!"
+        );
 
-        // TODO: Implement R1CS satisfaction check here!
-        unimplemented!("Implement R1CS satisfaction check!")
+        let a_w = self.left_matrix.vector_product(witness);
+        let b_w = self.right_matrix.vector_product(witness);
+        let c_w = self.output_matrix.vector_product(witness);
+        a_w.hadamard_product(&b_w) == c_w
     }
 
     /// Checks whether the j-th R1CS constraint is satisfied by the witness
-    pub fn is_constraint_satisfied(&self, witness: &Vector<WITNESS_SIZE>, constraint_id: usize) -> bool {
-        assert_eq!(witness.get(0), Fp::from(1), "first element of witness must be 1!");
+    pub fn is_constraint_satisfied(
+        &self,
+        witness: &Vector<WITNESS_SIZE>,
+        constraint_id: usize,
+    ) -> bool {
+        assert_eq!(
+            witness.get(0),
+            Fp::from(1),
+            "first element of witness must be 1!"
+        );
         assert!(constraint_id < CONSTRAINT_NUM, "invalid constraint id!");
 
-        // TODO: Implement R1CS constraint satisfaction check here!
-        unimplemented!("Implement R1CS constraint satisfaction check!")
+        let aj_w = self.left_matrix.row(constraint_id).dot(witness);
+        let bj_w = self.right_matrix.row(constraint_id).dot(witness);
+        aj_w * bj_w == self.output_matrix.row(constraint_id).dot(witness)
     }
 }
 
 /// Tests below create a toy R1CS to check the circuit satisfiability
 /// C(x1, x2, x3) = x1*x2*x3 + (1-x1)(x2+x3) for x2, x3 in Fp and x1 in {0,1}.
+///
+/// t1 = x1 * x2
+/// t2 = t1 * x3
+/// out = t2 + (1-x1)*(x2+x3)
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -56,7 +78,7 @@ mod tests {
 
     const WITNESS_SIZE: usize = 7;
     const CONSTRAINT_NUM: usize = 4;
-    
+
     fn create_toy_r1cs() -> R1CS<WITNESS_SIZE, CONSTRAINT_NUM> {
         let zero = Fp::from(0);
         let one = Fp::from(1);
